@@ -1,12 +1,20 @@
 import asyncio
 import datetime
-
+import time
+from selenium.webdriver.chrome.options import Options
 import undetected_chromedriver as uc
 from selenium.webdriver import ActionChains
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-
+from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.orm import Session
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service as ChromeService
 from DB.crud import write_data
-from DB.engine import db
+from DB.engine import sync_db
+from DB.models import AvitoData
+
+from selenium import webdriver
 
 
 class Avito:
@@ -15,20 +23,20 @@ class Avito:
         self.items = items
         self.count = count
 
-    async def __set_up(self):
-        self.driver = uc.Chrome(headless=True, use_subprocess=True)
+    def __set_up(self):
+        self.driver = uc.Chrome(headless=False, use_subprocess=True)
 
-    async def __get_url(self):
+    def __get_url(self):
         self.driver.get(self.url)
 
-    async def __paginator(self):
+    def __paginator(self):
         pag = self.driver.find_element(By.CSS_SELECTOR, '[data-marker="pagination-button/nextPage"]')
         while pag:
-            await self.__parse_page()
+            self.__parse_page()
             self.driver.find_element(By.CSS_SELECTOR, '[data-marker="pagination-button/nextPage"]').click()
-            await asyncio.sleep(10)
+            time.sleep(10)
 
-    async def __parse_page(self):
+    def __parse_page(self):
         titles = self.driver.find_elements(By.CSS_SELECTOR, '[data-marker="item"]')
         for item in titles:
             result = dict()
@@ -46,15 +54,16 @@ class Avito:
                 'title': name,
                 'description': description,
                 'link': link,
-                'seller': seller,
-                'seller_rank': seller_rank
+                # 'seller': seller,
+                # 'seller_rank': seller_rank
 
             })
-            async with db.scoped_session() as session:
-                await write_data(session=session, data=result)
-            await asyncio.sleep(10)
+            with Session(bind=sync_db.engine) as session:
+                session.execute(insert(AvitoData).values(result))
+                session.commit()
+            time.sleep(5)
 
-    async def parse(self):
-        await self.__set_up()
-        await self.__get_url()
-        await self.__paginator()
+    def parse(self):
+        self.__set_up()
+        self.__get_url()
+        time.sleep(60)

@@ -2,25 +2,25 @@ from asyncio import current_task
 from contextlib import asynccontextmanager
 
 from pydantic_settings import BaseSettings
-from sqlalchemy import NullPool
+from sqlalchemy import NullPool, create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, async_scoped_session, create_async_engine, async_sessionmaker
 
 from config import hidden
 
 
 class Settings(BaseSettings):
-    db_url: str = (f"postgresql+asyncpg://{hidden.db_username}:{hidden.db_password}"
+    db_url: str = (f"postgresql+driver://{hidden.db_username}:{hidden.db_password}"
                    f"@localhost:{hidden.db_local_port}/{hidden.db_name}")
-    db_echo: bool = True
+    db_echo: bool = hidden.db_echo
 
 
 settings = Settings()
 
 
-class DataBase:
+class AsyncDataBase:
     def __init__(self, url: str, echo: bool = False):
         self.engine = create_async_engine(
-            url=url,
+            url=url.replace('driver', 'asyncpg'),
             echo=echo,
             poolclass=NullPool
         )
@@ -44,4 +44,12 @@ class DataBase:
             await session.remove()
 
 
-db = DataBase(settings.db_url, settings.db_echo)
+class SyncDataBase:
+    def __init__(self, url: str, echo: bool = False):
+        self.engine = create_engine(
+            url=url.replace('driver', 'psycopg2'),
+            echo=echo)
+
+
+async_db = AsyncDataBase(settings.db_url, settings.db_echo)
+sync_db = SyncDataBase(settings.db_url, settings.db_echo)

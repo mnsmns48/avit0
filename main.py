@@ -1,23 +1,28 @@
 import asyncio
 
-from DB.engine import db
+from sqlalchemy.orm import Session
+
+from DB.engine import sync_db
 from DB.models import Base
 from cls import Avito
+from test import test_func
 
 
-async def main():
-    async with db.engine.begin() as async_connect:
-        await async_connect.run_sync(Base.metadata.create_all)
-    start = Avito(url='https://www.avito.ru/permskiy_kray/gotoviy_biznes',
-                  count=5,
-                  items=['']
-                  )
-    await start.parse()
+def main():
+    # Base.metadata.create_all(sync_db.engine)
+    # start = Avito(url="https://bot.sannysoft.com",
+    #               count=5,
+    #               items=['']
+    #               )
+    # # start.parse()
+    test_func()
 
+
+# https://bot.sannysoft.com/
 
 if __name__ == '__main__':
     try:
-        asyncio.run(main())
+        main()
 
     except (KeyboardInterrupt, SystemExit):
         print('Script stopped')
