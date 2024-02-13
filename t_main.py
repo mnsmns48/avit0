@@ -4,8 +4,8 @@ from sqlalchemy.orm import Session
 
 from DB.engine import sync_db
 from DB.models import Base
-from cls import Avito
-from test import test_func
+from t_cls import Avito
+
 
 
 def main():
