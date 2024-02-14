@@ -1,5 +1,6 @@
 import time
 
+from selenium.webdriver.common.by import By
 from seleniumbase import SB
 
 
@@ -8,7 +9,12 @@ def parse(url: str):
             browser='chrome',
             headed=True,
             page_load_strategy='eager',
-            block_images=True
+            block_images=True,
+
             ) as driver:
-        driver.get(url)
-        time.sleep(20)
+        content = driver.get(url)
+    titles = content.find_elements(By.CSS_SELECTOR, '[data-marker="item"]')
+    for item in titles:
+        name = item.find_element(By.CSS_SELECTOR, '[itemprop="name"]').text
+        print(name)
+    time.sleep(20)
