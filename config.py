@@ -6,6 +6,7 @@ from environs import Env
 @dataclass
 class Hidden:
     link: str
+    pages: int
     db_username: str
     db_password: str
     db_local_port: int
@@ -19,6 +20,7 @@ def load_hidden_vars(path: str):
 
     return Hidden(
         link=env.str("LINK"),
+        pages=env.int("PAGES"),
         db_username=env.str("DB_USERNAME"),
         db_password=env.str("DB_PASSWORD"),
         db_local_port=env.int("DB_LOCAL_PORT"),

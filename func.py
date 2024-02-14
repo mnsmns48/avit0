@@ -1,20 +1,47 @@
-import time
-
+import random
+from selenium.webdriver.support import expected_conditions as EC
+from datetime import datetime, timedelta
 from selenium.webdriver.common.by import By
-from seleniumbase import SB
+from selenium.webdriver.support.wait import WebDriverWait
+from seleniumbase.undetected import WebElement
 
 
-def parse(url: str):
-    with SB(uc=True,
-            browser='chrome',
-            headed=True,
-            page_load_strategy='eager',
-            block_images=True,
+def date_convert(date: str) -> datetime | None:
+    units = {
+        'час': 'hours',
+        'мин': 'minutes',
+        'дн': 'days',
+        'день': 'days',
+        'неде': 'weeks'
+    }
+    for key in units.keys():
+        if key in date.split(' ')[1]:
+            params = dict()
+            params[units.get(key)] = int(date.split(' ')[0])
+            if 'days' or 'weeks' in params.keys():
+                return datetime.now() - timedelta(**params) - timedelta(hours=random.randint(0, 7)) - timedelta(
+                    minutes=random.randint(0, 59))
+            else:
+                return datetime.now() - timedelta(**params)
 
-            ) as driver:
-        content = driver.get(url)
-    titles = content.find_elements(By.CSS_SELECTOR, '[data-marker="item"]')
-    for item in titles:
-        name = item.find_element(By.CSS_SELECTOR, '[itemprop="name"]').text
-        print(name)
-    time.sleep(20)
+
+def get_info(elem: WebElement) -> dict:
+    title = elem.find_element(By.CSS_SELECTOR, '[itemprop="name"]').text
+    date = elem.find_element(By.CSS_SELECTOR, '[data-marker="item-date"]').text
+    # date_test = WebDriverWait(elem, 2).until(EC.visibility_of_element_located((By.XPATH, "//*[@data-marker='item-date']")))
+    price = elem.find_element(By.CSS_SELECTOR, "[itemprop='price']").get_attribute('content')
+    description = elem.find_element(By.CSS_SELECTOR, "[class*='iva-item-description']").text
+    link = elem.find_element(By.CSS_SELECTOR, '[itemprop="url"]').get_attribute('href')
+    # loc = elem.find_element(By.CSS_SELECTOR, "[style='-webkit-line-clamp:1']").text
+    result = {
+        'date': date_convert(date),
+        'title': title,
+        'price': price,
+        'link': link,
+        'description': description,
+        'city': 'Казань',
+        # 'loc': loc,
+        'seller': 'Продавец',
+        'seller_rank': 4.7
+    }
+    return result

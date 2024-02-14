@@ -15,10 +15,12 @@ class Base(DeclarativeBase):
 
 class AvitoData(Base):
     id: Mapped[int] = mapped_column(primary_key=True, unique=True, autoincrement=True)
-    date: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
+    date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=False))
     price: Mapped[int]
-    title: Mapped[str] = mapped_column(primary_key=True, unique=True)
+    title: Mapped[str] = mapped_column(primary_key=True)
     description: Mapped[Optional[str]]
-    link: Mapped[str] = mapped_column(unique=True)
+    link: Mapped[str]
+    city: Mapped[str]
+    # loc: Mapped[Optional[str]]
     seller: Mapped[str]
     seller_rank: Mapped[Optional[float]]
