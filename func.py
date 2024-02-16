@@ -29,6 +29,7 @@ def get_info(elem: WebElement) -> dict:
     title = elem.find_element(By.CSS_SELECTOR, '[itemprop="name"]').text
     date = elem.find_element(By.CSS_SELECTOR, '[data-marker="item-date"]').text
     # date_test = WebDriverWait(elem, 2).until(EC.visibility_of_element_located((By.XPATH, "//*[@data-marker='item-date']")))
+    # m_seller = elem.find_elements(By.CSS_SELECTOR, '[style="-webkit-line-clamp:1"]')
     price = elem.find_element(By.CSS_SELECTOR, "[itemprop='price']").get_attribute('content')
     description = elem.find_element(By.CSS_SELECTOR, "[class*='iva-item-description']").text
     link = elem.find_element(By.CSS_SELECTOR, '[itemprop="url"]').get_attribute('href')
@@ -39,9 +40,11 @@ def get_info(elem: WebElement) -> dict:
         'price': price,
         'link': link,
         'description': description,
-        'city': 'Казань',
-        # 'loc': loc,
+        'city': 'Санкт-Петербург',
+        # 'm_seller': [i.text for i in m_seller],
         'seller': 'Продавец',
-        'seller_rank': 4.7
+        'seller_rank': 0
     }
     return result
+
+
