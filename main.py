@@ -5,6 +5,6 @@ from logic import start_pars
 from config import hidden
 
 if __name__ == '__main__':
-    # Base.metadata.create_all(sync_db.engine)
-    # start_pars(url=hidden.link, pages=hidden.pages)
-    out_excel()
+    Base.metadata.create_all(sync_db.engine)
+    start_pars(url=hidden.link, pages=hidden.pages, output_print=False, db_rec=True)
+    # out_excel()

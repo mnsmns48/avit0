@@ -40,11 +40,6 @@ def get_info(elem: WebElement) -> dict:
         'price': price,
         'link': link,
         'description': description,
-        'city': 'Санкт-Петербург',
         # 'm_seller': [i.text for i in m_seller],
-        'seller': 'Продавец',
-        'seller_rank': 0
     }
     return result
-
-

@@ -1,4 +1,5 @@
-from sqlalchemy import insert, select
+from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
@@ -14,14 +15,14 @@ async def async_write_data(session: AsyncSession, data: dict):
 
 
 def sync_write_data(session: Session, data: list):
-    stmt = insert(AvitoData).values(data)
+    stmt = insert(AvitoData).values(data).on_conflict_do_nothing(index_elements=[AvitoData.id])
     session.execute(stmt)
     session.commit()
 
 
 def out_excel():
     with Session(bind=sync_db.engine) as session:
-        query = session.execute(select(AvitoData.id, AvitoData.date, AvitoData.city, AvitoData.price, AvitoData.title,
+        query = session.execute(select(AvitoData.id, AvitoData.date, AvitoData.price, AvitoData.title,
                                        AvitoData.description, AvitoData.link).order_by(AvitoData.id))
     result = query.all()
     df = pd.DataFrame(result)
