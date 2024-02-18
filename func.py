@@ -4,6 +4,9 @@ from datetime import datetime, timedelta
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from seleniumbase.undetected import WebElement
+from translate import Translator
+
+translator = Translator(from_lang='en', to_lang='ru')
 
 
 def date_convert(date: str) -> datetime | None:
@@ -37,6 +40,7 @@ def get_info(elem: WebElement) -> dict:
     result = {
         'date': date_convert(date),
         'title': title,
+        'loc': link.split('https://www.avito.ru/')[1].split('/')[0],
         'price': price,
         'link': link,
         'description': description,
