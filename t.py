@@ -1,9 +1,3 @@
-import time
-
-from translate import Translator
-from seleniumbase import SB
-
-
 # url = 'https://whoer.net'
 # proxy = "185.238.228.48:80"
 #
@@ -18,9 +12,11 @@ from seleniumbase import SB
 #         time.sleep(60)
 #
 #
-stt = 'nizhniy_novgorod'
-translator = Translator(from_lang='en', to_lang='ru')
-g = ' '.join(stt.split('_'))
-print(g)
-ru_text = translator.translate(g)
-print(ru_text)
+# file = open('file2.html', 'r')
+# lines = file.readlines()
+# file.close()
+# html = ''.join(lines)
+#
+
+t = 5.0
+print(float(t))

@@ -34,7 +34,7 @@ def create_db():
 
 
 def sync_write_data(session: Session, data: list):
-    stmt = insert(AvitoData).values(data).on_conflict_do_nothing(index_elements=[AvitoData.id])
+    stmt = insert(AvitoData).values(data)
     session.execute(stmt)
     session.commit()
 

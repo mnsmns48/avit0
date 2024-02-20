@@ -2,7 +2,7 @@ import datetime
 from typing import Optional
 
 from sqlalchemy.orm import DeclarativeBase, declared_attr, Mapped, mapped_column
-from sqlalchemy import DateTime, BIGINT
+from sqlalchemy import DateTime, BIGINT, Text
 
 
 class Base(DeclarativeBase):
@@ -16,11 +16,12 @@ class Base(DeclarativeBase):
 class AvitoData(Base):
     id: Mapped[int] = mapped_column(primary_key=True, unique=True, autoincrement=True)
     date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=False))
-    loc: Mapped[Optional[str]]
+    location_1: Mapped[Optional[str]]
+    location_2: Mapped[Optional[str]]
     price: Mapped[Optional[int]] = mapped_column(BIGINT)
-    title: Mapped[str] = mapped_column(primary_key=True)
+    seller: Mapped[Optional[str]]
+    seller_rank: Mapped[Optional[float]]
+    seller_info: Mapped[Optional[str]]
+    title: Mapped[Optional[str]]
     description: Mapped[Optional[str]]
-    link: Mapped[str]
-
-
-
+    link: Mapped[Optional[str]]

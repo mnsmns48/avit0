@@ -1,12 +1,12 @@
 import random
+import re
+
+from bs4 import BeautifulSoup
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime, timedelta
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from seleniumbase.undetected import WebElement
-from translate import Translator
-
-translator = Translator(from_lang='en', to_lang='ru')
 
 
 def date_convert(date: str) -> datetime | None:
@@ -28,22 +28,76 @@ def date_convert(date: str) -> datetime | None:
                 return datetime.now() - timedelta(**params)
 
 
-def get_info(elem: WebElement) -> dict:
-    title = elem.find_element(By.CSS_SELECTOR, '[itemprop="name"]').text
-    date = elem.find_element(By.CSS_SELECTOR, '[data-marker="item-date"]').text
-    # date_test = WebDriverWait(elem, 2).until(EC.visibility_of_element_located((By.XPATH, "//*[@data-marker='item-date']")))
-    # m_seller = elem.find_elements(By.CSS_SELECTOR, '[style="-webkit-line-clamp:1"]')
-    price = elem.find_element(By.CSS_SELECTOR, "[itemprop='price']").get_attribute('content')
-    description = elem.find_element(By.CSS_SELECTOR, "[class*='iva-item-description']").text
-    link = elem.find_element(By.CSS_SELECTOR, '[itemprop="url"]').get_attribute('href')
-    # loc = elem.find_element(By.CSS_SELECTOR, "[style='-webkit-line-clamp:1']").text
-    result = {
-        'date': date_convert(date),
-        'title': title,
-        'loc': link.split('https://www.avito.ru/')[1].split('/')[0],
-        'price': price,
-        'link': link,
-        'description': description,
-        # 'm_seller': [i.text for i in m_seller],
-    }
+# def get_info(elem: WebElement) -> dict:
+#     title = elem.find_element(By.CSS_SELECTOR, '[itemprop="name"]').text
+#     date = elem.find_element(By.CSS_SELECTOR, '[data-marker="item-date"]').text
+#     # date_test = WebDriverWait(elem, 2).until(EC.visibility_of_element_located((By.XPATH, "//*[@data-marker='item-date']")))
+#     price = elem.find_element(By.CSS_SELECTOR, "[itemprop='price']").get_attribute('content')
+#     description = elem.find_element(By.CSS_SELECTOR, "[class*='iva-item-description']").text
+#     link = elem.find_element(By.CSS_SELECTOR, '[itemprop="url"]').get_attribute('href')
+#     # loc = elem.find_element(By.CSS_SELECTOR, "[style='-webkit-line-clamp:1']").text
+#     result = {
+#         'id': None,
+#         'date': date_convert(date),
+#         'loc': link.split('https://www.avito.ru/')[1].split('/')[0],
+#         'price': price,
+#         'seller': None,
+#         'seller_rank': None,
+#         'seller_reviews': None,
+#         'title': title,
+#         'description': description,
+#         'link': link,
+#         # 'm_seller': check_seller.text if check_seller else None
+#         # 'm_seller': [i.text for i in m_seller],
+#     }
+#     return result
+
+
+def get_seller(soup: BeautifulSoup) -> dict:
+    seller_result = dict()
+    seller_result['seller'] = None
+    seller_result['seller_rank'] = None
+    seller_result['seller_info'] = None
+    seller = soup.find("div", {"class": re.compile('.*iva-item-userInfoStep-.*')})
+    if not seller:
+        return seller_result
+    else:
+        seller_info = seller.getText()
+        if ',' in seller_info:
+            seller_rank = re.search(r'[\d][,][\d]', seller_info).group()
+            seller_result['seller'] = seller_info.split(seller_rank)[0]
+            seller_reviews = seller_info.split(seller_rank)[1]
+            seller_result['seller_rank'] = float(seller_rank.replace(',', '.'))
+        else:
+            seller_pattern = re.search(r"[Н|\d][е|\d|\s]", seller_info).group()
+            seller_result['seller'] = seller_info.split(seller_pattern)[0]
+            seller_reviews = seller_pattern + seller_info.split(seller_pattern)[1]
+    seller_reviews_result = seller_reviews[0]
+    for symbol in seller_reviews[1:]:
+        if symbol.isupper():
+            seller_reviews_result += f' {symbol}'
+        else:
+            seller_reviews_result += symbol
+    seller_result['seller_info'] = seller_reviews_result
+    return seller_result
+
+
+def get_info(elem: str) -> dict:
+    result = dict()
+    soup = BeautifulSoup(elem, 'html.parser')
+    date = soup.find("div", {"class": re.compile('.*iva-item-dateInfoStep-.*')})
+    loc = soup.find("div", {"class": re.compile('.*geo-root-.*')})
+    price = soup.find(itemprop='price').get('content')
+    title = soup.find(itemprop='name').getText()
+    desc = soup.find("div", {"class": re.compile('.*iva-item-descriptionStep-.*')})
+    link = soup.find(itemprop='url').get('href')
+    result['date'] = date_convert(date.getText())
+    result['location_1'] = link.split('/')[1]
+    result['location_2'] = loc.getText()
+    result['price'] = int(price)
+    result['title'] = title
+    result['description'] = desc.getText()
+    result['link'] = 'https://www.avito.ru/' + link
+    seller = get_seller(soup)
+    result.update(seller)
     return result
