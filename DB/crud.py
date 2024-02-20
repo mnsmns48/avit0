@@ -41,12 +41,25 @@ def sync_write_data(session: Session, data: list):
 
 def out_excel():
     with Session(bind=sync_db.engine) as session:
-        query = session.execute(select(AvitoData.id, AvitoData.date, AvitoData.price, AvitoData.title,
-                                       AvitoData.description, AvitoData.link).order_by(AvitoData.id))
+        query = session.execute(
+            select(AvitoData.id,
+                   AvitoData.date,
+                   AvitoData.location_1,
+                   AvitoData.location_2,
+                   AvitoData.price,
+                   AvitoData.title,
+                   AvitoData.description,
+                   AvitoData.seller,
+                   AvitoData.seller_rank,
+                   AvitoData.seller_info,
+                   AvitoData.link
+                   ).order_by(AvitoData.id))
     result = query.all()
     df = pd.DataFrame(result)
     filename = 'data.xlsx'
 
     writer = pd.ExcelWriter(filename)
-    df.to_excel(writer, index=False)
-    writer.close()
+    try:
+        df.to_excel(writer, index=False)
+    finally:
+        writer.close()

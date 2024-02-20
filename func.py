@@ -2,11 +2,7 @@ import random
 import re
 
 from bs4 import BeautifulSoup
-from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime, timedelta
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from seleniumbase.undetected import WebElement
 
 
 def date_convert(date: str) -> datetime | None:
@@ -26,31 +22,6 @@ def date_convert(date: str) -> datetime | None:
                     minutes=random.randint(0, 59))
             else:
                 return datetime.now() - timedelta(**params)
-
-
-# def get_info(elem: WebElement) -> dict:
-#     title = elem.find_element(By.CSS_SELECTOR, '[itemprop="name"]').text
-#     date = elem.find_element(By.CSS_SELECTOR, '[data-marker="item-date"]').text
-#     # date_test = WebDriverWait(elem, 2).until(EC.visibility_of_element_located((By.XPATH, "//*[@data-marker='item-date']")))
-#     price = elem.find_element(By.CSS_SELECTOR, "[itemprop='price']").get_attribute('content')
-#     description = elem.find_element(By.CSS_SELECTOR, "[class*='iva-item-description']").text
-#     link = elem.find_element(By.CSS_SELECTOR, '[itemprop="url"]').get_attribute('href')
-#     # loc = elem.find_element(By.CSS_SELECTOR, "[style='-webkit-line-clamp:1']").text
-#     result = {
-#         'id': None,
-#         'date': date_convert(date),
-#         'loc': link.split('https://www.avito.ru/')[1].split('/')[0],
-#         'price': price,
-#         'seller': None,
-#         'seller_rank': None,
-#         'seller_reviews': None,
-#         'title': title,
-#         'description': description,
-#         'link': link,
-#         # 'm_seller': check_seller.text if check_seller else None
-#         # 'm_seller': [i.text for i in m_seller],
-#     }
-#     return result
 
 
 def get_seller(soup: BeautifulSoup) -> dict:
@@ -97,7 +68,7 @@ def get_info(elem: str) -> dict:
     result['price'] = int(price)
     result['title'] = title
     result['description'] = desc.getText()
-    result['link'] = 'https://www.avito.ru/' + link
+    result['link'] = 'https://www.avito.ru' + link
     seller = get_seller(soup)
     result.update(seller)
     return result
