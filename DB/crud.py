@@ -47,17 +47,16 @@ def out_excel():
                    AvitoData.location_1,
                    AvitoData.location_2,
                    AvitoData.price,
-                   AvitoData.title,
-                   AvitoData.description,
                    AvitoData.seller,
                    AvitoData.seller_rank,
                    AvitoData.seller_info,
-                   AvitoData.link
+                   AvitoData.title,
+                   AvitoData.link,
+                   AvitoData.description
                    ).order_by(AvitoData.id))
     result = query.all()
     df = pd.DataFrame(result)
     filename = 'data.xlsx'
-
     writer = pd.ExcelWriter(filename)
     try:
         df.to_excel(writer, index=False)

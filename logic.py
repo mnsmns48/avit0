@@ -6,20 +6,24 @@ from sqlalchemy.orm import Session
 from DB.crud import sync_write_data
 from DB.engine import sync_db
 from func import get_info
-from temp import get_info
 
 
-def start_pars(url: str, start_page: int, pages: int, output_print: bool, db_rec: bool, sleep_time: int):
+def start_pars(link: str, start_page: int, pages: int, output_print: bool, db_rec: bool, sleep_time: int):
+    if start_page != 1:
+        url = f'{link}?={start_page}'
+    else:
+        url = link
     count = start_page
     with SB(uc=True, browser='chrome', headed=False, page_load_strategy='eager', block_images=True) as driver:
         driver.get(url)
-        while count != pages + 1:
+        while count != pages:
             try:
                 elems = list()
                 items = driver.find_elements("[data-marker='item']", by="css selector")
                 print(count, 'page')
                 for line in items:
-                    item = get_info(line.get_attribute('innerHTML'))
+                    page = line.get_attribute('innerHTML')
+                    item = get_info(page)
                     elems.append(item)
                 if output_print:
                     for i in elems:
@@ -38,5 +42,7 @@ def start_pars(url: str, start_page: int, pages: int, output_print: bool, db_rec
                 print(f"page: {count}\n{time_exception_error}")
             except AttributeError as attribute_error:
                 print(f"page: {count}\n{attribute_error}")
-                new_link = url.split('=')
-                driver.get(f'{new_link[0]}={count + 1}')
+                break
+                # count += 1
+                # new_link = f'{link}?={count}'
+                # driver.get(new_link)
