@@ -17,11 +17,14 @@
 # file.close()
 # html = ''.join(lines)
 #
+import time
+
 from selenium.webdriver.common.by import By
+from seleniumbase import SB
 from seleniumbase.undetected import WebElement
 
+from config import russia, internal_links
 from func import date_convert
-
 
 # def get_info(elem: WebElement) -> dict:
 #     title = elem.find_element(By.CSS_SELECTOR, '[itemprop="name"]').text
@@ -42,7 +45,20 @@ from func import date_convert
 #         'title': title,
 #         'description': description,
 #         'link': link,
-        # 'm_seller': check_seller.text if check_seller else None
-        # 'm_seller': [i.text for i in m_seller],
-    # }
-    # return result
+# 'm_seller': check_seller.text if check_seller else None
+# 'm_seller': [i.text for i in m_seller],
+# }
+# return result
+
+
+if __name__ == "__main__":
+    with SB(uc=True,
+            browser='chrome',
+            headed=True,
+            page_load_strategy='eager',
+            block_images=True) as driver:
+        category = [cat for cat in internal_links]
+        for i in category:
+            url = russia[0] + internal_links.get(i)
+            driver.get(url)
+            time.sleep(10)

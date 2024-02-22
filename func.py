@@ -18,7 +18,7 @@ def date_convert(date: str) -> datetime | None:
             params = dict()
             params[units.get(key)] = int(date.split(' ')[0])
             if 'days' or 'weeks' in params.keys():
-                return datetime.now() - timedelta(**params) - timedelta(hours=random.randint(0, 7)) - timedelta(
+                return datetime.now() - timedelta(**params) - timedelta(hours=random.randint(0, 12)) - timedelta(
                     minutes=random.randint(0, 59))
             else:
                 return datetime.now() - timedelta(**params)

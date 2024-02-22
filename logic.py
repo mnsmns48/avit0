@@ -1,6 +1,7 @@
 import time
 from selenium.common import TimeoutException
 from seleniumbase import SB
+from seleniumbase.common.exceptions import NoSuchElementException
 from sqlalchemy.orm import Session
 
 from DB.crud import sync_write_data
@@ -10,7 +11,7 @@ from func import get_info
 
 def start_pars(link: str, start_page: int, pages: int, output_print: bool, db_rec: bool, sleep_time: int):
     if start_page != 1:
-        url = f'{link}?={start_page}'
+        url = f'{link}?p={start_page}'
     else:
         url = link
     count = start_page
@@ -20,7 +21,6 @@ def start_pars(link: str, start_page: int, pages: int, output_print: bool, db_re
             try:
                 elems = list()
                 items = driver.find_elements("[data-marker='item']", by="css selector")
-                print(count, 'page')
                 for line in items:
                     page = line.get_attribute('innerHTML')
                     item = get_info(page)
@@ -34,15 +34,15 @@ def start_pars(link: str, start_page: int, pages: int, output_print: bool, db_re
                 if db_rec:
                     with Session(bind=sync_db.engine) as session:
                         sync_write_data(session=session, data=elems)
-                    print(f'added {count * 50} lines from start')
+                    print(f'page: {count} added: {count * 50} lines')
                 time.sleep(sleep_time)
                 driver.find_element("[data-marker='pagination-button/nextPage']", by="css selector").click()
                 count += 1
-            except TimeoutException as time_exception_error:
-                print(f"page: {count}\n{time_exception_error}")
+            except (TimeoutException, NoSuchElementException) as time_error:
+                time.sleep(30)
+                print(f"page: {count}\n{time_error}")
             except AttributeError as attribute_error:
                 print(f"page: {count}\n{attribute_error}")
-                break
-                # count += 1
-                # new_link = f'{link}?={count}'
-                # driver.get(new_link)
+                count += 1
+                new_link = f'{link}?p={count}'
+                driver.get(new_link)
