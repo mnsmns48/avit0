@@ -1,6 +1,5 @@
 import random
 import re
-
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 
@@ -55,7 +54,7 @@ def get_seller(soup: BeautifulSoup) -> dict:
 
 def get_info(elem: str) -> dict:
     result = dict()
-    soup = BeautifulSoup(elem, 'html.parser')
+    soup = BeautifulSoup(elem, 'lxml')
     date = soup.find("div", {"class": re.compile('.*iva-item-dateInfoStep-.*')})
     loc = soup.find("div", {"class": re.compile('.*geo-root-.*')})
     price = soup.find(itemprop='price').get('content')
