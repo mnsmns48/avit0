@@ -6,7 +6,7 @@ from DB.engine import sync_db
 from DB.models import Base
 from config import hidden
 from logic import start_pars
-from logic_v2 import logic_v2
+from logic_v2 import get_region_links, gen_region_info
 
 
 def main():
@@ -17,11 +17,15 @@ def main():
         Base.metadata.create_all(sync_db.engine)
     print('Что парсим?\n'
           '1 - Спарсить ссылки по всем регионам\n'
+          '2 - Парсим область\n'
           '8 - Забираем результаты')
     choice = int(input())
     if choice == 1:
         print('Забираю ссылки')
-        logic_v2()
+        get_region_links()
+        print('Начинаю собирать по областям')
+    if choice == 2:
+        gen_region_info()
     if choice == 8:
         print('Создаю Excel файл с данными')
         out_excel()

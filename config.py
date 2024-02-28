@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from environs import Env
 
 internal_links = {
-    'Интернет-магазины и IT': '/internet-magazin',
+    'Интернет-магазины и IT': '/internet_magazin',
     'Общественное питание': '/obschestvennoe_pitanie',
     'Производство': '/proizvodstvo',
     'Развлечения': '/razvlecheniya',
@@ -39,6 +39,7 @@ def load_hidden_vars(path: str):
 
     return Hidden(
         link=env.str("LINK"),
+        delay=env.float("DELAY"),
         tablename=env.str("TABLENAME"),
         start_page=env.int("START_PAGE"),
         pages=env.int("PAGES"),
