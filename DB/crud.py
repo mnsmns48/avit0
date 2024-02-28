@@ -5,14 +5,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
 from DB.engine import sync_db
-from DB.models import AvitoData
+from DB.models import Data
 import pandas as pd
 
 from config import hidden
 
 
 async def async_write_data(session: AsyncSession, data: dict):
-    stmt = insert(AvitoData).values(data)
+    stmt = insert(Data).values(data)
     await session.execute(stmt)
     await session.commit()
 
@@ -34,7 +34,7 @@ def create_db():
 
 
 def sync_write_data(session: Session, data: list):
-    stmt = insert(AvitoData).values(data)
+    stmt = insert(Data).values(data)
     session.execute(stmt)
     session.commit()
 
@@ -42,18 +42,18 @@ def sync_write_data(session: Session, data: list):
 def out_excel():
     with Session(bind=sync_db.engine) as session:
         query = session.execute(
-            select(AvitoData.id,
-                   AvitoData.date,
-                   AvitoData.location_1,
-                   AvitoData.location_2,
-                   AvitoData.price,
-                   AvitoData.seller,
-                   AvitoData.seller_rank,
-                   AvitoData.seller_info,
-                   AvitoData.title,
-                   AvitoData.link,
-                   AvitoData.description
-                   ).order_by(AvitoData.id))
+            select(Data.id,
+                   Data.date,
+                   Data.location_1,
+                   Data.location_2,
+                   Data.price,
+                   Data.seller,
+                   Data.seller_rank,
+                   Data.seller_info,
+                   Data.title,
+                   Data.link,
+                   Data.description
+                   ).order_by(Data.id))
     result = query.all()
     df = pd.DataFrame(result)
     filename = 'data.xlsx'
@@ -62,3 +62,7 @@ def out_excel():
         df.to_excel(writer, index=False)
     finally:
         writer.close()
+
+
+def add_support_info(data: dict):
+    keys = list(data.get('links').keys())

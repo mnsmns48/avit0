@@ -22,6 +22,7 @@ internal_links = {
 @dataclass
 class Hidden:
     link: str
+    delay: float
     tablename: str
     start_page: int
     pages: int
@@ -104,10 +105,8 @@ russia = [
     'kostromskaya_oblast',
     'kurganskaya_oblast',
     'kurskaya_oblast',
-    'leningradskaya_oblast',
     'lipetskaya_oblast',
     'magadanskaya_oblast',
-    'moskovskaya_oblast',
     'murmanskaya_oblast',
     'nizhegorodskaya_oblast',
     'novgorodskaya_oblast',
