@@ -44,12 +44,13 @@ def out_excel():
         query = session.execute(
             select(Data.id,
                    Data.date,
-                   Data.location_1,
-                   Data.location_2,
+                   Data.region,
+                   Data.location,
                    Data.price,
                    Data.seller,
                    Data.seller_rank,
                    Data.seller_info,
+                   Data.category,
                    Data.title,
                    Data.link,
                    Data.description
@@ -85,13 +86,53 @@ def add_support_info(session: Session, data: dict):
     session.commit()
 
 
-def get_links(session: Session, region_id: int) -> dict:
+def get_links(region_id: int) -> dict | None:
     answer = dict()
     query = select(Support).filter(Support.id == region_id)
-    result = session.execute(query)
-    result = result.scalars().all()
+    with Session(bind=sync_db.engine) as session:
+        result = session.execute(query)
+        result = result.scalars().all()
     for line in result:
         answer.update(line.__dict__)
-    answer.pop('_sa_instance_state')
-    answer.pop('id')
+    try:
+        answer.pop('_sa_instance_state')
+        answer.pop('id')
+    except KeyError:
+        print('нет ссылок на области, сначала необходимо спарсить ссылки')
+        return None
     return answer
+
+
+def get_regions_db() -> list:
+    query = select(Support.region).group_by(Support.region)
+    with Session(bind=sync_db.engine) as session:
+        result = session.execute(query)
+        result = result.scalars().all()
+    return list(result)
+
+
+def write_region_data(reg: str):
+    with Session(bind=sync_db.engine) as session:
+        query = session.execute(
+            select(Data.id,
+                   Data.date,
+                   Data.region,
+                   Data.location,
+                   Data.price,
+                   Data.seller,
+                   Data.seller_rank,
+                   Data.seller_info,
+                   Data.category,
+                   Data.title,
+                   Data.link,
+                   Data.description
+                   ).filter(Data.region == reg).order_by(Data.category, Data.date))
+        result = query.all()
+    df = pd.DataFrame(result)
+    filename = f'xls/{reg}.xlsx'
+    writer = pd.ExcelWriter(filename)
+    try:
+        df.to_excel(writer, index=False)
+    finally:
+        writer.close()
+        print(f'{reg} записана в файл')

@@ -2,20 +2,20 @@ from dataclasses import dataclass
 
 from environs import Env
 
-internal_links = {
-    'Интернет-магазины и IT': '/internet_magazin',
-    'Общественное питание': '/obschestvennoe_pitanie',
-    'Производство': '/proizvodstvo',
-    'Развлечения': '/razvlecheniya',
-    'Сельское хозяйство': '/selskoe_hozyaystvo',
-    'Строительство': '/stroitelstvo',
-    'Сфера услуг': '/sfera_uslug',
-    'Магазины и пункты выдачи заказов': '/torgovlya',
-    'Автобизнес': '/avtomobilnyi_biznes',
-    'Красота и уход': '/krasota_i_ukhod',
-    'Стоматология и медицина': '/zdorove_i_medicina',
-    'Туризм': '/gostinicy_i_bazy_otdykha',
-    'Другое': '/drugoe'
+category_dict = {
+    'internet_magazin': 'Интернет-магазины и IT',
+    'obschestvennoe_pitanie': 'Общественное питание',
+    'proizvodstvo': 'Производство',
+    'razvlecheniya': 'Развлечения',
+    'selskoe_hozyaystvo': 'Сельское хозяйство',
+    'stroitelstvo': 'Строительство',
+    'sfera_uslug': 'Сфера услуг',
+    'torgovlya': 'Магазины и пункты выдачи заказов',
+    'avtomobilnyi_biznes': 'Автобизнес',
+    'krasota_i_ukhod': 'Красота и уход',
+    'zdorove_i_medicina': 'Стоматология и медицина',
+    'gostinicy_i_bazy_otdykha': 'Туризм',
+    'drugoe': 'Другое'
 }
 
 
@@ -80,7 +80,6 @@ russia = [
     'udmurtiya',
     'hakasiya',
     'chechenskaya_respublika',
-    'altayskiy_kray',
     'zabaykalskiy_kray',
     'kamchatskiy_kray',
     'krasnodarskiy_kray',

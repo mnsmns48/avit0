@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from DB.crud import sync_write_data
 from DB.engine import sync_db
-from func import get_info
+from func import pars_one_ad
 
 
 def start_pars(link: str, start_page: int, pages: int, output_print: bool, db_rec: bool, sleep_time: int):
@@ -23,7 +23,7 @@ def start_pars(link: str, start_page: int, pages: int, output_print: bool, db_re
                 items = driver.find_elements("[data-marker='item']", by="css selector")
                 for line in items:
                     page = line.get_attribute('innerHTML')
-                    item = get_info(page)
+                    item = pars_one_ad(page)
                     elems.append(item)
                 if output_print:
                     for i in elems:

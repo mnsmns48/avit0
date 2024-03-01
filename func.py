@@ -1,7 +1,19 @@
 import random
 import re
+import time
+
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
+
+
+def time_count(func):
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        print(time.time() - start)
+        return result
+
+    return wrapper
 
 
 def date_convert(date: str) -> datetime | None:
@@ -34,10 +46,13 @@ def get_seller(soup: BeautifulSoup) -> dict:
     else:
         seller_info = seller.getText()
         if ',' in seller_info:
-            seller_rank = re.search(r'[\d][,][\d]', seller_info).group()
-            seller_result['seller'] = seller_info.split(seller_rank)[0]
-            seller_reviews = seller_info.split(seller_rank)[1]
-            seller_result['seller_rank'] = float(seller_rank.replace(',', '.'))
+            try:
+                seller_rank = re.search(r'[\d][,][\d]', seller_info).group()
+                seller_result['seller'] = seller_info.split(seller_rank)[0]
+                seller_reviews = seller_info.split(seller_rank)[1]
+                seller_result['seller_rank'] = float(seller_rank.replace(',', '.'))
+            except AttributeError:
+                return seller_result
         else:
             seller_pattern = re.search(r"[Н|\d][е|\d|\s]", seller_info).group()
             seller_result['seller'] = seller_info.split(seller_pattern)[0]
@@ -52,7 +67,7 @@ def get_seller(soup: BeautifulSoup) -> dict:
     return seller_result
 
 
-def get_info(elem: str) -> dict:
+def pars_one_ad(elem: str, region: str, category: str) -> dict:
     result = dict()
     soup = BeautifulSoup(elem, 'lxml')
     date = soup.find("div", {"class": re.compile('.*iva-item-dateInfoStep-.*')})
@@ -62,11 +77,12 @@ def get_info(elem: str) -> dict:
     desc = soup.find("div", {"class": re.compile('.*iva-item-descriptionStep-.*')})
     link = soup.find(itemprop='url').get('href')
     result['date'] = date_convert(date.getText())
-    result['location_1'] = link.split('/')[1]
-    result['location_2'] = loc.getText()
+    result['region'] = region
+    result['location'] = loc.getText()
     result['price'] = int(price)
+    result['category'] = category
     result['title'] = title
-    result['description'] = desc.getText()
+    result['description'] = desc.getText() if desc else None
     result['link'] = 'https://www.avito.ru' + link
     seller = get_seller(soup)
     result.update(seller)
