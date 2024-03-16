@@ -31,6 +31,7 @@ class Data(Base):
 class Support(Base):
     id: Mapped[int] = mapped_column(primary_key=True, unique=True, autoincrement=True)
     region: Mapped[str]
+    franshizy: Mapped[Optional[str]]
     internet_magazin: Mapped[Optional[str]]
     obschestvennoe_pitanie: Mapped[Optional[str]]
     proizvodstvo: Mapped[Optional[str]]
