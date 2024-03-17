@@ -4,7 +4,7 @@ from DB.crud import out_excel, create_db, get_regions_db, write_region_data
 from DB.engine import sync_db
 from DB.models import Base
 from logic_v2_SB_ import get_region_links_v2, pars_region
-from logic_v3_uc import get_region_links_v3
+from logic_v3_uc import save_links_v3
 
 
 def main():
@@ -22,7 +22,7 @@ def main():
     if choice == 1:
         print('Забираю ссылки')
         # get_region_links_v2()
-        get_region_links_v3()
+        save_links_v3()
         print('Начинаю собирать по областям')
     if choice == 2:
         print('Введите номер региона')

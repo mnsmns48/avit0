@@ -68,6 +68,7 @@ def out_excel():
 def add_support_info(session: Session, data: dict):
     stmt = insert(Support).values(
         region=data.get('region'),
+        franshizy=data.get('links').get('Франшизы'),
         internet_magazin=data.get('links').get('Интернет-магазины и IT'),
         obschestvennoe_pitanie=data.get('links').get('Общественное питание'),
         proizvodstvo=data.get('links').get('Производство'),
