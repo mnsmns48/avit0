@@ -7,7 +7,7 @@ from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
 from seleniumbase import Driver
 
-from config import russia
+from config import russia_eng
 
 threadLocal = threading.local()
 
@@ -33,7 +33,7 @@ def region_check(region_id: int) -> dict:
     time.sleep(1)
     result = dict()
     links_list = list()
-    url = f"https://avito.ru/{russia[region_id]}/gotoviy_biznes"
+    url = f"https://avito.ru/{russia_eng[region_id]}/gotoviy_biznes"
     driver.get(url)
     try:
         result['region'] = driver.find_element(By.XPATH, "//*[@class='desktop-nev1ty']").text

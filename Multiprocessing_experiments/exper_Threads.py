@@ -8,16 +8,16 @@ from itertools import cycle
 from selenium.webdriver.common.by import By
 from seleniumbase import Driver
 
-from config import russia
+from config import russia_eng
 
 
 def region_check(driver: Driver, region_id: int) -> dict:
     time.sleep(1)
-    items = list(range(0, len(russia)))
+    items = list(range(0, len(russia_eng)))
     random.shuffle(items)
     result = dict()
     links_list = list()
-    url = f"https://avito.ru/{russia[region_id]}/gotoviy_biznes"
+    url = f"https://avito.ru/{russia_eng[region_id]}/gotoviy_biznes"
     driver.get(url)
     while True:
         try:
@@ -42,7 +42,7 @@ def callback(result):
 def main():
     start = time.time()
     # items = [81, 83, 0, 9]
-    items = list(range(0, len(russia)))
+    items = list(range(0, len(russia_eng)))
     drivers = [
         Driver(uc=True, browser='chrome', headed=True, page_load_strategy='eager', block_images=True),
         Driver(uc=True, browser='chrome', headed=True, page_load_strategy='eager', block_images=True),

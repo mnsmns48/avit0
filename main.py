@@ -3,7 +3,8 @@ from sqlalchemy.exc import OperationalError
 from DB.crud import out_excel, create_db, get_regions_db, write_region_data
 from DB.engine import sync_db
 from DB.models import Base
-from logic import get_region_links, pars_region
+from logic_v2_SB_ import get_region_links_v2, pars_region
+from logic_v3_uc import get_region_links_v3
 
 
 def main():
@@ -20,7 +21,8 @@ def main():
     choice = int(input())
     if choice == 1:
         print('Забираю ссылки')
-        get_region_links()
+        # get_region_links_v2()
+        get_region_links_v3()
         print('Начинаю собирать по областям')
     if choice == 2:
         print('Введите номер региона')
@@ -40,4 +42,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('Script stopped')

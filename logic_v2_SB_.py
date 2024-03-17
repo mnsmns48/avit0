@@ -9,8 +9,9 @@ from sqlalchemy.orm import Session
 
 from DB.crud import add_support_info, get_links, sync_write_data
 from DB.engine import sync_db
-from config import russia, hidden, category_dict
-from func import pars_one_ad, time_count
+from config import russia_eng, hidden, category_dict
+from bs4_process import pars_one_ad, time_count
+
 
 # threadLocal = threading.local()
 
@@ -19,13 +20,14 @@ def region_check(region_id: int, driver: SB) -> dict:
     time.sleep(hidden.delay)
     result = dict()
     links_list = list()
-    url = f"https://avito.ru/{russia[region_id]}/gotoviy_biznes"
+    url = f"https://avito.ru/{russia_eng[region_id]}/gotoviy_biznes"
     driver.get(url)
     while True:
         try:
-            result['region'] = driver.find_element(By.XPATH, "//*[@class='desktop-nev1ty']").text
+            result['region'] = driver.find_element(By.XPATH, '//span[@class="desktop-nev1ty"]').text
+            print(result['region'])
         except NoSuchElementException:
-            print(f'Ошибка парсинга области {russia[region_id]}\n'
+            print(f'Ошибка парсинга области {russia_eng[region_id]}\n'
                   'Пробую через 30 секунд опять')
             time.sleep(30)
             driver.get(url)
@@ -39,8 +41,8 @@ def region_check(region_id: int, driver: SB) -> dict:
         return result
 
 
-def get_region_links():
-    items = list(range(0, len(russia)))
+def get_region_links_v2():
+    items = list(range(0, len(russia_eng)))
     start = time.time()
     with SB(uc=True, browser='chrome', headed=False, page_load_strategy='eager', block_images=True) as driver:
         for line in items:
@@ -48,7 +50,6 @@ def get_region_links():
                                 driver=driver)
             with Session(bind=sync_db.engine) as session:
                 add_support_info(session=session, data=data)
-        driver.__del__()
         print(f'\nЗадержка {hidden.delay}\nВремя выполнения: {time.time() - start} секунд\n'
               f'Области добавлены')
 

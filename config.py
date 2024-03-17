@@ -15,13 +15,14 @@ category_dict = {
     'krasota_i_ukhod': 'Красота и уход',
     'zdorove_i_medicina': 'Стоматология и медицина',
     'gostinicy_i_bazy_otdykha': 'Туризм',
-    'drugoe': 'Другое'
+    'drugoe': 'Другое',
+    'franshizy': 'Франшизы'
 }
 
 
 @dataclass
 class Hidden:
-    link: str
+    # link: str
     delay: float
     tablename: str
     start_page: int
@@ -38,7 +39,7 @@ def load_hidden_vars(path: str):
     env.read_env()
 
     return Hidden(
-        link=env.str("LINK"),
+        # link=env.str("LINK"),
         delay=env.float("DELAY"),
         tablename=env.str("TABLENAME"),
         start_page=env.int("START_PAGE"),
@@ -53,7 +54,7 @@ def load_hidden_vars(path: str):
 
 hidden = load_hidden_vars(path='.env')
 
-russia = [
+russia_eng = [
     'moskva_i_mo',
     'sankt_peterburg_i_lo',
     'adygeya',
@@ -137,4 +138,28 @@ russia = [
     'hanty-mansiyskiy_ao',
     'chukotskiy_ao',
     'yamalo-nenetskiy_ao',
+]
+
+russia_rus = [
+    'Москва и МО',
+    'Санкт-Петербург и ЛО',
+    'Республика Адыгея',
+    'Алтайский край',
+    'Республика Башкортостан',
+    'Республика Бурятия',
+    'Республика Дагестан',
+    'Донецк (Донецкая область)',
+    'Республика Ингушетия',
+    'Республика Кабардино-Балкария',
+    'Республика Калмыкия',
+    'Республика Карачаево-Черкесия',
+    'Республика Карелия',
+    'Херсон',
+    'коми',
+    'Республика Крым',
+    'Луганск',
+    'марий эл',
+    'мордовия',
+
+
 ]
