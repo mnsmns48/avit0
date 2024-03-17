@@ -17,6 +17,7 @@ from DB.engine import sync_db
 from config import russia_rus
 
 path = Path(os.path.abspath(__file__)).parent
+ignored_exceptions = (NoSuchElementException, StaleElementReferenceException)
 
 
 def run_up_driver() -> uc:
@@ -35,14 +36,19 @@ def run_up_driver() -> uc:
     driver.get('https://www.google.ru')
     time.sleep(random.uniform(0.4, 1))
     driver.find_element(By.XPATH, '//textarea[@aria-label]').send_keys('Avito')
-    time.sleep(random.uniform(0.4, 1))
+    time.sleep(1)
     driver.find_element(By.XPATH, '//input[@aria-label]').click()
-    time.sleep(random.uniform(0.4, 1))
+    time.sleep(1)
     driver.find_element(By.XPATH, '//h3[1]').click()
-    time.sleep(random.randint(1, 3))
     driver.switch_to.window(driver.window_handles[1])
-    driver.find_element(By.XPATH, "//button[@data-marker='top-rubricator/all-categories']").click()
-    time.sleep(random.uniform(0.4, 0.8))
+    time.sleep(3)
+    cl = WebDriverWait(driver=driver,
+                       timeout=10,
+                       ignored_exceptions=ignored_exceptions) \
+        .until(expected_conditions.presence_of_element_located(
+        (By.XPATH, "//button[@data-marker='top-rubricator/all-categories']")))
+    cl.click()
+    time.sleep(2)
     menu = driver.find_elements(By.XPATH, "//div[contains(@class, 'new-rubricator-content-rootCategory-')]/div/p")
     for item in menu:
         ActionChains(driver).move_to_element(item).perform()
@@ -53,30 +59,20 @@ def run_up_driver() -> uc:
 
 
 def region_check_v3(region: str, driver: uc) -> dict:
-    ignored_exceptions = (NoSuchElementException, StaleElementReferenceException)
-    WebDriverWait(driver=driver,
-                  timeout=3,
-                  ignored_exceptions=ignored_exceptions) \
-        .until(expected_conditions.presence_of_element_located((By.XPATH, '//span[@class="desktop-nev1ty"]'))).click()
-    time.sleep(random.uniform(0.4, 1))
-    WebDriverWait(driver=driver,
-                  timeout=3,
-                  ignored_exceptions=ignored_exceptions) \
-        .until(expected_conditions.presence_of_element_located((By.XPATH, '//div[@data-marker="clear-icon"]'))).click()
-    time.sleep(random.uniform(0.4, 1))
-    WebDriverWait(driver=driver,
-                  timeout=3,
-                  ignored_exceptions=ignored_exceptions) \
-        .until(expected_conditions.presence_of_element_located(
-        (By.XPATH, '//input[@placeholder="Город или регион"]'))).send_keys(region)
-    time.sleep(random.uniform(1, 2))
+    driver.implicitly_wait(5)
+    time.sleep(3)
+    driver.find_element(By.XPATH, '//span[@class="desktop-nev1ty"]').click()
+    time.sleep(1)
+    driver.find_element(By.XPATH, '//div[@data-marker="clear-icon"]').click()
+    time.sleep(2)
+    driver.find_element(By.XPATH, '//input[@placeholder="Город или регион"]').send_keys(region)
+    time.sleep(1)
     cities = driver.find_elements(By.XPATH, "//span[contains(@class, 'suggest-suggest_content-')]")
-    time.sleep(random.uniform(0.4, 0.6))
-
+    time.sleep(1)
     for i in cities:
         if i.text == russia_rus.get(region):
             WebDriverWait(driver=i,
-                          timeout=3,
+                          timeout=10,
                           ignored_exceptions=ignored_exceptions) \
                 .until(expected_conditions.presence_of_element_located((By.XPATH, '../..'))).click()
             break
@@ -88,7 +84,7 @@ def region_check_v3(region: str, driver: uc) -> dict:
                .presence_of_element_located((By.XPATH, '//button[@data-marker="popup-location/save-button"]'))).click()
     result = dict()
     result['region'] = WebDriverWait(driver=driver,
-                                     timeout=3,
+                                     timeout=10,
                                      ignored_exceptions=ignored_exceptions) \
         .until(expected_conditions
                .presence_of_element_located((By.XPATH, '//span[@class="desktop-nev1ty"]'))).text
