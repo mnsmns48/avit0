@@ -59,9 +59,14 @@ def run_up_driver() -> uc:
 
 
 def region_check_v3(region: str, driver: uc) -> dict:
-    driver.implicitly_wait(5)
-    time.sleep(3)
-    driver.find_element(By.XPATH, '//span[@class="desktop-nev1ty"]').click()
+    driver.implicitly_wait(6)
+    time.sleep(1)
+    dtn = WebDriverWait(driver=driver,
+                        timeout=30,
+                        ignored_exceptions=ignored_exceptions) \
+        .until(expected_conditions.presence_of_element_located((By.XPATH, '//span[@class="desktop-nev1ty"]')))
+    if dtn:
+        dtn.click()
     time.sleep(1)
     driver.find_element(By.XPATH, '//div[@data-marker="clear-icon"]').click()
     time.sleep(2)
@@ -83,6 +88,7 @@ def region_check_v3(region: str, driver: uc) -> dict:
         .until(expected_conditions
                .presence_of_element_located((By.XPATH, '//button[@data-marker="popup-location/save-button"]'))).click()
     result = dict()
+    time.sleep(1)
     result['region'] = WebDriverWait(driver=driver,
                                      timeout=10,
                                      ignored_exceptions=ignored_exceptions) \

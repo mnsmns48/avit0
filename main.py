@@ -1,3 +1,5 @@
+import time
+
 from sqlalchemy.exc import OperationalError
 
 from DB.crud import out_excel, create_db, get_regions_db, write_region_data
@@ -23,15 +25,14 @@ def main():
         print('Забираю ссылки')
         # get_region_links_v2()
         save_links_v3()
-        print('Начинаю собирать по областям')
     if choice == 2:
         print('Введите номер региона')
         n = int(input())
         pars_region(reg_n=n)
     if choice == 3:
         print('Выбран режим парсинга всей России')
-        regions = list(range(0, 84))
-        # regions = [68, 69]
+        # regions = list(range(1, 83))
+        regions = [1]
         for region_id in regions:
             pars_region(reg_n=region_id)
     if choice == 8:
