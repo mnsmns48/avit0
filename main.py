@@ -31,8 +31,8 @@ def main():
         pars_region(reg_n=n)
     if choice == 3:
         print('Выбран режим парсинга всей России')
-        # regions = list(range(1, 83))
-        regions = [1]
+        regions = list(range(2, 83))
+        # regions = [1]
         for region_id in regions:
             pars_region(reg_n=region_id)
     if choice == 8:
